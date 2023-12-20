@@ -2,7 +2,7 @@
 // @Project : concurrency
 // @Time    : 2023/11/24 16:28
 // @Author  : chengxiang.luo
-// @Email   : chengxiang.luo@pharmaron.com
+// @Email   : chengxiang.luo@foxmail.com
 // @File    : concurrency.go
 // @Software: GoLand
 package go_toolkit
