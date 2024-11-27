@@ -1,3 +1,3 @@
-module github.com/netluo/go-toolkit
+module github.com/cx-luo/go-toolkit
 
 go 1.20
