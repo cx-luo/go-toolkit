@@ -1,23 +1,15 @@
-// Package go_toolkit coding=utf-8
-// @Project : go-toolkit
-// @Time    : 2023/12/20 15:21
-// @Author  : chengxiang.luo
-// @Email   : chengxiang.luo@foxmail.com
-// @File    : other_tools.go
-// @Software: GoLand
-package go_toolkit
+// Package convert provides type conversion utilities
+package convert
 
 import (
-	"encoding/csv"
 	"encoding/json"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func GetInterfaceToString(value interface{}) string {
-	// interface 转 string
+// ToString converts an interface{} value to string
+func ToString(value interface{}) string {
 	var key string
 	if value == nil {
 		return key
@@ -65,7 +57,7 @@ func GetInterfaceToString(value interface{}) string {
 	case time.Time:
 		t, _ := value.(time.Time)
 		key = t.String()
-		// 2022-11-23 11:29:07 +0800 CST  这类格式把尾巴去掉
+		// Remove timezone suffix
 		key = strings.Replace(key, " +0800 CST", "", 1)
 		key = strings.Replace(key, " +0000 UTC", "", 1)
 	case []byte:
@@ -78,79 +70,144 @@ func GetInterfaceToString(value interface{}) string {
 	return key
 }
 
-func ReadRecordsFromCsv(csvFilePath string) [][]string {
-	csvFile, err := os.Open(csvFilePath)
-	if err != nil {
-		panic(err)
-	}
-	defer func(csvFile *os.File) {
-		err := csvFile.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(csvFile)
-
-	reader := csv.NewReader(csvFile)
-	records, err := reader.ReadAll()
-	if err != nil {
-		panic(err)
-	}
-	return records
-}
-
-func GetInterfaceToInt(v interface{}) int {
+// ToInt converts an interface{} value to int
+func ToInt(v interface{}) int {
 	var r int
 	switch v.(type) {
 	case uint:
 		r = int(v.(uint))
-		break
 	case int8:
 		r = int(v.(int8))
-		break
 	case uint8:
 		r = int(v.(uint8))
-		break
 	case int16:
 		r = int(v.(int16))
-		break
 	case uint16:
 		r = int(v.(uint16))
-		break
 	case int32:
 		r = int(v.(int32))
-		break
 	case uint32:
 		r = int(v.(uint32))
-		break
 	case int64:
 		r = int(v.(int64))
-		break
 	case uint64:
 		r = int(v.(uint64))
-		break
 	case float32:
 		r = int(v.(float32))
-		break
 	case float64:
 		r = int(v.(float64))
-		break
 	case string:
 		r, _ = strconv.Atoi(v.(string))
 		if r == 0 && len(v.(string)) > 0 {
 			f, _ := strconv.ParseFloat(v.(string), 64)
 			r = int(f)
 		}
-		break
 	case nil:
 		r = 0
-		break
 	case json.Number:
 		t3, _ := v.(json.Number).Int64()
 		r = int(t3)
-		break
 	default:
 		r = v.(int)
-		break
 	}
 	return r
+}
+
+// ToInt64 converts an interface{} value to int64
+func ToInt64(v interface{}) int64 {
+	switch val := v.(type) {
+	case int:
+		return int64(val)
+	case int8:
+		return int64(val)
+	case int16:
+		return int64(val)
+	case int32:
+		return int64(val)
+	case int64:
+		return val
+	case uint:
+		return int64(val)
+	case uint8:
+		return int64(val)
+	case uint16:
+		return int64(val)
+	case uint32:
+		return int64(val)
+	case uint64:
+		return int64(val)
+	case float32:
+		return int64(val)
+	case float64:
+		return int64(val)
+	case string:
+		i, _ := strconv.ParseInt(val, 10, 64)
+		return i
+	case json.Number:
+		i, _ := val.Int64()
+		return i
+	default:
+		return 0
+	}
+}
+
+// ToFloat64 converts an interface{} value to float64
+func ToFloat64(v interface{}) float64 {
+	switch val := v.(type) {
+	case float32:
+		return float64(val)
+	case float64:
+		return val
+	case int:
+		return float64(val)
+	case int8:
+		return float64(val)
+	case int16:
+		return float64(val)
+	case int32:
+		return float64(val)
+	case int64:
+		return float64(val)
+	case uint:
+		return float64(val)
+	case uint8:
+		return float64(val)
+	case uint16:
+		return float64(val)
+	case uint32:
+		return float64(val)
+	case uint64:
+		return float64(val)
+	case string:
+		f, _ := strconv.ParseFloat(val, 64)
+		return f
+	case json.Number:
+		f, _ := val.Float64()
+		return f
+	default:
+		return 0
+	}
+}
+
+// ToBool converts an interface{} value to bool
+func ToBool(v interface{}) bool {
+	switch val := v.(type) {
+	case bool:
+		return val
+	case string:
+		b, _ := strconv.ParseBool(val)
+		return b
+	case int:
+		return val != 0
+	case int8:
+		return val != 0
+	case int16:
+		return val != 0
+	case int32:
+		return val != 0
+	case int64:
+		return val != 0
+	default:
+		return false
+	}
 }

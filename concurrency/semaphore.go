@@ -1,16 +1,11 @@
-// Package go_toolkit coding=utf-8
-// @Project : concurrency
-// @Time    : 2023/11/24 16:28
-// @Author  : chengxiang.luo
-// @Email   : chengxiang.luo@foxmail.com
-// @File    : concurrency.go
-// @Software: GoLand
-package go_toolkit
+// Package concurrency provides concurrency control utilities
+package concurrency
 
 import (
 	"sync"
 )
 
+// Semaphore provides a counting semaphore implementation
 type Semaphore struct {
 	c  chan struct{}
 	wg sync.WaitGroup
