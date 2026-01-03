@@ -12,6 +12,7 @@
 - 🗺️ **Map 操作** - Map 的常用操作工具
 - 🔐 **加密工具** - MD5、SHA1、SHA256、SHA512 等哈希函数
 - 🔄 **并发控制** - 信号量等并发控制工具
+- 📄 **JSON 操作** - JSON 路径查找、值转换、路径操作等工具
 
 ## 安装
 
@@ -262,6 +263,70 @@ sem.AcquireWithFunc(func(args ...interface{}) {
 sem.Wait()
 ```
 
+### JSON 操作 (jsonutil)
+
+```go
+import "github.com/cx-luo/go-toolkit/jsonutil"
+
+jsonStr := `{
+    "user": {
+        "name": "John",
+        "age": 30,
+        "items": [
+            {"id": 1, "name": "item1"},
+            {"id": 2, "name": "item2"}
+        ]
+    }
+}`
+
+var data interface{}
+json.Unmarshal([]byte(jsonStr), &data)
+
+// 将所有值转换为字符串
+converted, err := jsonutil.ConvertValuesToString(data)
+// 结果: {"user":{"name":"John","age":"30","items":[{"id":"1","name":"item1"},...]}}
+
+// 从JSON字符串转换所有值为字符串
+convertedStr, err := jsonutil.ConvertJSONStringValuesToString(jsonStr)
+
+// 根据路径获取值
+name, err := jsonutil.GetValueByPath(data, "user.name")           // "John"
+age, err := jsonutil.GetIntByPath(data, "user.age")               // 30
+itemName, err := jsonutil.GetStringByPath(data, "user.items[0].name")  // "item1"
+
+// 检查路径是否存在
+exists := jsonutil.HasPath(data, "user.name")  // true
+exists = jsonutil.HasPath(data, "user.email")  // false
+
+// 设置路径的值
+err = jsonutil.SetValueByPath(data, "user.name", "Jane")
+
+// 获取所有路径
+allPaths := jsonutil.GetAllPaths(data)
+// 结果: ["user", "user.name", "user.age", "user.items", "user.items[0]", ...]
+
+// 查找路径（根据条件）
+options := &jsonutil.FindOptions{
+    KeyPattern: "name",  // 查找所有包含"name"的键
+}
+paths, err := jsonutil.FindPaths(data, options)
+// 结果: ["user.name", "user.items[0].name", "user.items[1].name"]
+
+// 查找特定值的路径
+options = &jsonutil.FindOptions{
+    ExactValue: "John",  // 查找值为"John"的路径
+}
+paths, err = jsonutil.FindPaths(data, options)
+// 结果: ["user.name"]
+
+// 查找特定类型的路径
+options = &jsonutil.FindOptions{
+    ValueType: "number",  // 查找所有数字类型的路径
+}
+paths, err = jsonutil.FindPaths(data, options)
+// 结果: ["user.age", "user.items[0].id", "user.items[1].id"]
+```
+
 ## 模块说明
 
 - `convert` - 类型转换工具
@@ -272,6 +337,7 @@ sem.Wait()
 - `file` - 文件操作工具
 - `crypto` - 加密工具
 - `concurrency` - 并发控制工具
+- `jsonutil` - JSON 操作工具
 
 ## 贡献
 
