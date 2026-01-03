@@ -214,6 +214,51 @@ err = file.CopyFile("source.txt", "dest.txt")
 
 // 获取文件扩展名
 ext := file.GetExt("file.txt")  // ".txt"
+
+// ===== 大型文件处理 =====
+
+// 逐行流式读取（使用回调函数，内存高效）
+err = file.ReadLinesStream("large_file.txt", func(line string, lineNum int) error {
+    // 处理每一行
+    fmt.Println(line)
+    // 可以返回错误来停止读取
+    return nil
+})
+
+// 逐行流式读取（使用通道，适合并发处理）
+lines, errChan := file.ReadLinesChannel("large_file.txt", 100)
+for line := range lines {
+    // 处理每一行
+    fmt.Println(line)
+}
+if err := <-errChan; err != nil {
+    // 处理错误
+}
+
+// 分块读取（指定偏移量和大小）
+chunk, n, err := file.ReadChunk("large_file.bin", 0, 1024*1024)  // 读取1MB
+
+// 分块流式读取（使用回调函数）
+err = file.ReadChunksStream("large_file.bin", 1024*1024, func(chunk []byte, offset int64) error {
+    // 处理每个块（1MB）
+    // offset 是当前块在文件中的位置
+    return nil
+})
+
+// 分块流式读取（使用通道）
+chunks, errChan := file.ReadChunksChannel("large_file.bin", 1024*1024, 10)
+for chunk := range chunks {
+    // chunk.Data 是块数据
+    // chunk.Offset 是块在文件中的偏移量
+    // chunk.Size 是块的大小
+    fmt.Printf("Offset: %d, Size: %d\n", chunk.Offset, chunk.Size)
+}
+
+// 读取指定偏移量的块
+chunk, err := file.ReadChunkWithOffset("large_file.bin", 1024*1024, 512*1024)  // 从1MB位置读取512KB
+
+// 读取前N行（适合只处理文件开头的情况）
+lines, err := file.ReadLinesWithLimit("large_file.txt", 100)  // 只读取前100行
 ```
 
 ### 加密工具 (crypto)
